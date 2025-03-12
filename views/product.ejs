@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title><%= product.name %> - Chi tiết sản phẩm</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body style="background-color: #0f0f2d; color: white;">
+<%- include('partials/header') %>
+
+    <div class="container mt-4">
+        <!-- Nút quay lại -->
+   <div class="row">
+   <div class="col-md-2 ">
+<a href="/" class="btn-back-bar">
+    <i class="fas fa-chevron-left"></i> Quay lại
+</a>
+</div>
+<div class="col-md-9 d-flex flex-column align-items-center justify-content-center text-center">
+    <h1 class="text-center">Gà Fc Mobile Uy tín số 1 Việt Nam</h1>
+    <p class="text-center">Trang web mua bán gói Trong Game FC Mobile.</p>
+    </div>
+</div>
+
+        <div class="row">
+            <!-- Hộp chứa ảnh + thông tin sản phẩm -->
+            <div class="col-md-7">
+                <div class="product-container d-flex p-3">
+                    <!-- Ảnh sản phẩm -->
+                    <div class="product-image">
+                        <img src="<%= product.image %>" class="img-fluid rounded">
+                    </div>
+                    <!-- Thông tin sản phẩm -->
+                    <div class="product-info ms-3">
+                        <h3><%= product.name %></h3>
+                        <p>⭐⭐⭐⭐⭐ Đã bán <%= product.sold %>k</p>
+                        <h4 class="text-warning">$<%= product.price %></h4>
+                    </div>
+                </div>
+                <div class="border-top pt-3"></div>
+                <!-- Khu vực ảnh hướng dẫn -->
+                <div class="product-container d-flex p-3">
+                    <img src="/images/huong-dan.jpg" class="img-fluid rounded" style="max-width: 100%;">
+                </div>
+                
+            </div>
+
+            <!-- Form nhập thông tin đơn hàng -->
+            <div class="col-md-5">
+                <div class="order-box p-4">
+                    <h4>Thông tin Order</h4>
+                    <form action="/order" method="POST">
+                        <div class="mb-2">
+                            <label class="form-label">Phương thức đăng nhập *</label>
+                            <input type="text" name="login_method" id="input-method" class="form-control">
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label">Số điện thoại *</label>
+                            <input type="text" name="phone" id="input-phone" class="form-control">
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label">Tài khoản *</label>
+                            <input type="text" name="account"  id="input-account" class="form-control">
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label">Mật khẩu *</label>
+                            <input type="password" name="password" id="input-password" class="form-control">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Tên nhân vật</label>
+                            <input type="text" name="character_name"  id="input-character_name" class="form-control">
+                        </div>
+
+                        <!-- Giá tiền -->
+                        <div class="border-top pt-3"></div>
+                        
+                        <div class="price-container">
+                            <span class="price-label">Giá gốc:</span>
+                            <span class="price-value">151.000đ</span>
+                        </div>
+                        <div class="mb-3 price-container">
+                            <span class="price-label">Giảm giá:</span>
+                            <span class="price-value">151.000đ</span>
+                        </div>
+                        <div class="border-top pt-3"></div>
+                        
+                        <div class="mb-3 price-container">
+                            <span class="h3 text-warning" >Tổng tiền:</span>
+                            <span class="h3 text-warning price-value">105.000đ</span>
+                        </div>
+                            <button id="btn-mua-ngay" type="button" class="btn btn-primary w-100">Mua ngay</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+
+<!-- Popup Thanh Toán -->
+<<!-- Popup Thanh Toán -->
+<!-- Popup Thanh Toán -->
+<div id="popup-thanh-toan" class="popup-overlay">
+    <div class="popup-content">
+        <!-- Nút đóng -->
+        <span class="close-popup">&times;</span>
+
+        <!-- Tiêu đề -->
+        <h2 class="popup-title">THANH TOÁN ĐƠN HÀNG</h2>
+
+        <div class="popup-body">
+           
+            <!-- 🔹 Khối chứa ảnh sản phẩm -->
+            <div class="popup-box">
+                <div class="popup-qr">
+                        <div class="">
+                        <h4> <%= product.name %></h4>
+                        <p>⭐️ Đã bán: <span id="popup-sold"></span></p>
+                        <p class="popup-price">Tổng tiền: <span id="popup-total"></span></p>
+                    </div>
+                    <img  src="<%= product.image %>" alt="Sản phẩm" class="popup-product-img">
+                </div>
+            </div>
+
+            <!-- 🔹 Khối chứa thông tin đơn hàng -->
+            <div class="popup-box">
+                <div class="popup-order-info">
+                    <p>Phương thức: <span id="popup-method"></span></p>
+                    <p>Số điện thoại: <span id="popup-phone"></span></p>
+                    <p>Tài khoản: <span id="popup-account"></span></p>
+                    <p>Mật khẩu: <span id="popup-password"></span></p>
+                    <p>Tên nhân vật: <span id="popup-character"></span></p>
+                </div>
+            </div>
+
+            <!-- 🔹 Khối chứa mã QR -->
+            <div class="popup-box">
+                <div class="popup-qr">
+                    <h4>Quét mã QR để thanh toán</h4>
+                    <img id="popup-qr-img" src="<%= product.image %>" alt="Mã QR">
+                </div>
+            </div>
+        </div>
+      
+
+
+        <!-- 🔹 Nút tải ảnh thanh toán -->
+        <div class="popup-box">
+            <div class="upload-container">
+                <label class="upload-label" for="upload">📷 Tải ảnh thanh toán</label>
+                <input type="file" id="upload" accept="image/*" multiple>
+                <div id="previewContainer" style="display: flex; gap: 10px; margin-top: 10px; flex-wrap: wrap;"></div>
+            </div>
+        </div>
+
+        <!-- 🔹 Hướng dẫn thanh toán -->
+        <div class="popup-box">
+            <div class="popup-guide">
+                <h4>HƯỚNG DẪN THANH TOÁN</h4>
+                <p>Bạn vui lòng quét mã QR để thanh toán. Sau khi chuyển khoản thành công, hãy nhấn nút xác nhận.</p>
+            </div>
+        </div>
+
+        <!-- 🔹 Nút xác nhận thanh toán -->
+        <button id="btn-confirm-payment">XÁC NHẬN THANH TOÁN</button>
+    </div>
+</div>
+
+<!-- End Popup Thanh Toán -->
+    </div>
+
+</body>
+</html>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    document.getElementById("btn-mua-ngay").addEventListener("click", function () {
+        // Lấy dữ liệu từ form
+        let productImg = document.getElementById("product-img")?.src || "";
+        let productName = document.getElementById("product-name")?.innerText || "Không có tên";
+        let sold = document.getElementById("product-sold")?.innerText || "0";
+        let method = document.getElementById("input-method")?.value || "Không có phương thức";
+        let phone = document.getElementById("input-phone")?.value || "Không có số điện thoại";
+        let account = document.getElementById("input-account")?.value || "Không có tài khoản";
+        let password = document.getElementById("input-password")?.value || "Không có mật khẩu";
+        let character = document.getElementById("input-character_name")?.value || "Không có tên nhân vật";
+        let note = document.getElementById("input-note")?.value || "";
+        let total = document.getElementById("total")?.innerText || "0đ";
+
+        // Hiển thị popup
+        document.getElementById("popup-thanh-toan").style.display = "flex";
+
+        // Gán dữ liệu vào popup
+        // document.getElementById("popup-product-img").src = productImg;
+        // document.getElementById("popup-product-name").innerText = productName;
+        document.getElementById("popup-sold").innerText = sold;
+        document.getElementById("popup-method").innerText = method;
+        document.getElementById("popup-phone").innerText = phone;
+        document.getElementById("popup-account").innerText = account;
+        document.getElementById("popup-password").innerText = password;
+        document.getElementById("popup-character").innerText = character;
+        // document.getElementById("popup-note").value = note;
+        document.getElementById("popup-total").innerText = total;
+
+        // Gán ảnh QR (cần cập nhật link ảnh QR)
+        // document.getElementById("popup-qr-img").src = "path/to/qr-code.png";
+    });
+
+    // Đóng popup khi nhấn nút đóng
+    document.querySelector(".close-popup").addEventListener("click", function () {
+        document.getElementById("popup-thanh-toan").style.display = "none";
+    });
+
+// Upload file ảnh
+document.getElementById('upload').addEventListener('change', function (event) {
+    const files = event.target.files; // Lấy danh sách ảnh
+    const previewContainer = document.getElementById('previewContainer');
+
+    for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        const reader = new FileReader();
+
+        reader.onload = function (e) {
+            // Tạo một thẻ div chứa ảnh và nút xóa
+            const imageWrapper = document.createElement('div');
+            imageWrapper.style.position = 'relative';
+            imageWrapper.style.display = 'inline-block';
+
+            // Tạo ảnh
+            const img = document.createElement('img');
+            img.src = e.target.result;
+            img.style.width = '100px';
+            img.style.height = '100px';
+            img.style.objectFit = 'cover';
+            img.style.borderRadius = '5px';
+            img.style.border = '1px solid #ddd';
+            img.style.marginRight = '10px';
+
+            // Tạo nút "❌" để xóa ảnh
+            const removeBtn = document.createElement('button');
+            removeBtn.innerHTML = '❌';
+            removeBtn.style.position = 'absolute';
+            removeBtn.style.top = '5px';
+            removeBtn.style.right = '5px';
+            removeBtn.style.background = 'red';
+            removeBtn.style.color = 'white';
+            removeBtn.style.border = 'none';
+            removeBtn.style.borderRadius = '50%';
+            removeBtn.style.width = '20px';
+            removeBtn.style.height = '20px';
+            removeBtn.style.cursor = 'pointer';
+            removeBtn.style.fontSize = '12px';
+            
+            // Sự kiện xóa ảnh
+            removeBtn.addEventListener('click', function () {
+                previewContainer.removeChild(imageWrapper);
+            });
+
+            // Thêm ảnh và nút xóa vào div bọc
+            imageWrapper.appendChild(img);
+            imageWrapper.appendChild(removeBtn);
+            previewContainer.appendChild(imageWrapper);
+        };
+
+        reader.readAsDataURL(file);
+    }
+});
+
+// end upload ảnh
+
+
+});
+
+
+</script>
