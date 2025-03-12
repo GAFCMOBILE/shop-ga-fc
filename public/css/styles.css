@@ -486,3 +486,97 @@ body */
 #btn-confirm-payment:hover {
     background: linear-gradient(45deg, #e60000, #ff4d4d);
 }
+.popup-image {
+    display: none !important;
+}
+.popup-content {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+}
+
+@media (max-width: 768px) {
+    /* 📌 Giữ nguyên popup full chiều ngang + padding */
+    .popup-content {
+        display: flex !important;
+        flex-direction: column !important;
+        width: 90% !important;
+        max-height: 85vh !important;
+        align-items: center !important;
+        justify-content: flex-start !important;
+        padding: 15px !important;
+        overflow-y: auto !important;
+    }
+
+    /* 📌 Tiêu đề popup */
+    .popup-title {
+        font-size: 18px !important;
+        font-weight: bold !important;
+        color: #FFD700 !important;
+        text-transform: uppercase !important;
+        text-align: center !important;
+        margin-bottom: 15px !important;
+    }
+
+    /* 📌 Các phần khác trong popup vẫn giữ nguyên chiều dọc */
+    .popup-body {
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        width: 100% !important;
+        gap: 15px !important;
+    }
+
+    /* 🔥 Chỉ chỉnh ảnh sản phẩm + tên sản phẩm nằm ngang */
+    .popup-product-container {
+        display: flex !important;
+        flex-direction: row !important;
+        align-items: center !important;
+        justify-content: flex-start !important;
+        width: 100% !important;
+        padding: 10px !important;
+        gap: 10px !important;
+    }
+
+    /* 📌 Ảnh sản phẩm */
+    .popup-product-img {
+        width: 80px !important;
+        height: 80px !important;
+        border-radius: 8px !important;
+        object-fit: contain !important;
+    }
+
+    /* 📌 Tên sản phẩm */
+    .popup-product-name {
+        font-size: 16px !important;
+        font-weight: bold !important;
+        color: white !important;
+        flex: 1 !important;
+        text-align: left !important;
+    }
+
+    /* 📌 Giữ nguyên các box khác full width + padding */
+    .popup-box {
+        width: 100% !important;
+        text-align: center !important;
+        padding: 10px !important;
+        background: #1c1c3c !important;
+        border-radius: 10px !important;
+    }
+
+    /* 📌 Ảnh QR */
+    .popup-qr img {
+        width: 120px !important;
+        height: 120px !important;
+        border-radius: 8px !important;
+    }
+
+    /* 📌 Nút xác nhận */
+    #btn-confirm-payment {
+        width: 100% !important;
+        font-size: 14px !important;
+        padding: 10px !important;
+        margin-top: 10px !important;
+    }
+}
+
