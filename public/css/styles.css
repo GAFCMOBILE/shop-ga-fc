@@ -401,6 +401,145 @@ body */
 }
 
 /* Khối nội dung trong popup */
+* Overlay */
+/* Popup Overlay */
+.popup-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    justify-content: center;
+    align-items: center;
+}
+
+/* 🔹 Popup mở rộng + căn giữa nội dung */
+.popup-content {
+    background: #1E1E1E;
+    color: white;
+    width: 60%;
+    padding: 25px;
+    border-radius: 10px;
+    position: relative;
+
+    max-height: 80vh; /* Giới hạn chiều cao tối đa */
+    overflow-y: auto;  /* Cho phép cuộn dọc */
+}
+
+/* Nút đóng popup */
+.close-popup {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    font-size: 24px;
+    cursor: pointer;
+}
+
+/* 🔹 Tiêu đề "Thông tin thanh toán" đẹp hơn */
+.popup-title {
+    font-size: 22px;
+    font-weight: bold;
+    color: #FFD700; /* Màu vàng gold */
+    margin-bottom: 15px;
+    text-transform: uppercase;
+    text-align: center; /* Căn giữa nội dung */
+}
+
+/* Nội dung chính của popup */
+.popup-body {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+}
+
+/* Ảnh sản phẩm */
+.popup-left {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.popup-product-img {
+    width: 120px;
+    height: 120px;
+    object-fit: cover;
+    border-radius: 8px;
+}
+
+.popup-product-info {
+    max-width: 200px;
+}
+
+/* Thông tin order */
+.popup-order-info {
+    display: flex;
+    flex-direction: column; /* Xếp nội dung theo chiều dọc */
+    justify-content: center; /* Căn giữa theo chiều dọc */
+    align-items: center; /* Căn giữa cả khối */
+    width: 80%; /* Điều chỉnh độ rộng */
+    margin: 0 auto; /* Căn giữa khối */
+}
+
+.popup-order-info * {  
+    text-align: left !important; /* Giữ text căn trái */
+    align-self: flex-start; /* Đảm bảo text nằm về bên trái */
+    width: 100%; /* Đảm bảo full width để text không bị ép vào giữa */
+}
+
+/* Ảnh QR */
+.popup-qr img {
+    width: 150px;
+    height: 150px;
+    border-radius: 8px;
+}
+
+.popup-content textarea {
+    width: 100%; /* Chiếm toàn bộ chiều ngang */
+    min-height: 100px; /* Đặt chiều cao tối thiểu */
+    resize: vertical; /* Cho phép kéo dài theo chiều dọc */
+    padding: 10px; /* Thêm padding cho đẹp */
+    border: 1px solid #ccc; /* Bo viền nhẹ */
+    border-radius: 5px; /* Bo góc */
+    font-size: 16px; /* Tăng cỡ chữ cho dễ nhìn */
+}
+
+/* Hướng dẫn thanh toán */
+.popup-guide {
+    margin-top: 20px;
+    padding-top: 15px;
+    border-top: 1px solid white;
+}
+
+.popup-guide h4 {
+    font-size: 18px;
+    font-weight: bold;
+}
+
+/* Nút xác nhận */
+#btn-confirm-payment {
+    width: 100%;
+    padding: 10px;
+    margin-top: 15px;
+    background: #ff4d4d;
+    border: none;
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+#btn-confirm-payment:hover {
+    background: #e60000;
+}
+
+.upload-container input[type="file"] {
+    display: none;
+}
+
+/* Khối nội dung trong popup */
 
 .popup-body {
     display: flex;
@@ -486,14 +625,7 @@ body */
 #btn-confirm-payment:hover {
     background: linear-gradient(45deg, #e60000, #ff4d4d);
 }
-.popup-image {
-    display: none !important;
-}
-.popup-content {
-    display: flex !important;
-    flex-direction: column !important;
-    align-items: center !important;
-}
+
 
 @media (max-width: 768px) {
     /* 📌 Giữ nguyên popup full chiều ngang + padding */
