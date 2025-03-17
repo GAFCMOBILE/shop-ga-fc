@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản trị sản phẩm</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+    <style>
+        body {
+            background-color: #1c1c1e;
+            color: white;
+        }
+        h2, h4 {
+            text-align: center;
+            margin-top: 20px;
+        }
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            margin-top: 20px;
+        }
+        .product-card {
+            background: #2c2c2e;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            transition: transform 0.2s;
+        }
+        .product-card:hover {
+            transform: scale(1.05);
+        }
+        .product-card img {
+            max-width: 100%;
+            height: 100px;
+            object-fit: cover;
+            border-radius: 5px;
+        }
+        .edit-popup {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            justify-content: center;
+            align-items: center;
+        }
+        .edit-popup-content {
+            background: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            width: 400px;
+        }
+
+.edit-popup-content {
+    background: white; /* Nền trắng */
+    color: black; /* Chữ đen */
+    padding: 20px;
+    border-radius: 10px;
+    width: 400px;
+}
+.edit-popup-content input,
+.edit-popup-content label {
+    color: black; /* Chữ đen để dễ đọc */
+}
+
+
+        
+    </style>
+</head>
+<body>
+
+    <h2>Quản lý sản phẩm</h2>
+
+    <!-- Nút thêm sản phẩm -->
+    <div class="text-center">
+        <button class="btn btn-success" id="addProductBtn">Thêm sản phẩm</button>
+    </div>
+
+    <!-- Form thêm sản phẩm (Popup) -->
+    <div class="edit-popup" id="addPopup">
+        <div class="edit-popup-content">
+            <h3>Thêm sản phẩm</h3>
+            <form id="addForm" action="/add-product" method="POST" enctype="multipart/form-data">
+                <div class="mb-3">
+                    <label class="form-label">Tên sản phẩm</label>
+                    <input type="text" name="name" class="form-control" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Giá</label>
+                    <input type="number" name="price" class="form-control" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Chọn ảnh</label>
+                    <input type="file" name="image" class="form-control" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Thêm</button>
+                <button type="button" class="btn btn-secondary" id="closeAddPopup">Hủy</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Danh sách sản phẩm -->
+    <div class="container">
+        <h4>Danh sách sản phẩm</h4>
+        <div class="product-grid">
+            <% products.forEach(product => { %>
+            <div class="product-card">
+                <img src="<%= product.image %>" alt="<%= product.name %>">
+                <h5><%= product.name %></h5>
+                <p><%= product.price %> đ</p>
+                <button class="btn btn-warning btn-sm edit-btn"
+                    data-id="<%= product.id %>"
+                    data-name="<%= product.name %>"
+                    data-price="<%= product.price %>"
+                    data-image="<%= product.image %>">
+                    Sửa
+                </button>
+                <form action="/delete-product/<%= product.id %>" method="POST" style="display:inline;">
+                    <button type="submit" class="btn btn-danger btn-sm">Xóa</button>
+                </form>
+            </div>
+            <% }) %>
+        </div>
+    </div>
+
+    <!-- Popup chỉnh sửa sản phẩm -->
+    <div class="edit-popup" id="editPopup">
+        <div class="edit-popup-content">
+            <h3>Chỉnh sửa sản phẩm</h3>
+            <form id="editForm" method="POST" enctype="multipart/form-data">
+                <input type="hidden" name="id" id="editId">
+                <div class="mb-3">
+                    <label class="form-label">Tên sản phẩm</label>
+                    <input type="text" name="name" id="editName" class="form-control" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Giá</label>
+                    <input type="number" name="price" id="editPrice" class="form-control" required>
+                </div>
+                <div class="mb-3">
+                    <label>Hình ảnh hiện tại:</label><br>
+                    <img id="editImagePreview" width="150">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Chọn ảnh mới (nếu có)</label>
+                    <input type="file" name="image" id="editImage" class="form-control">
+                </div>
+                <button type="submit" class="btn btn-primary">Lưu</button>
+                <button type="button" class="btn btn-secondary" id="closeEditPopup">Hủy</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            // Popup thêm sản phẩm
+            document.getElementById("addProductBtn").addEventListener("click", function () {
+                document.getElementById("addPopup").style.display = "flex";
+            });
+            document.getElementById("closeAddPopup").addEventListener("click", function () {
+                document.getElementById("addPopup").style.display = "none";
+            });
+
+            // Popup sửa sản phẩm
+            const editPopup = document.getElementById("editPopup");
+            document.querySelectorAll(".edit-btn").forEach(button => {
+                button.addEventListener("click", function () {
+                    document.getElementById("editId").value = this.dataset.id;
+                    document.getElementById("editName").value = this.dataset.name;
+                    document.getElementById("editPrice").value = this.dataset.price;
+                    document.getElementById("editImagePreview").src = this.dataset.image;
+                    document.getElementById("editForm").action = "/edit-product/" + this.dataset.id;
+                    editPopup.style.display = "flex";
+                });
+            });
+
+            document.getElementById("closeEditPopup").addEventListener("click", function () {
+                editPopup.style.display = "none";
+            });
+        });
+    </script>
+
+</body>
+</html>
