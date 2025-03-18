@@ -2,47 +2,120 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <title>Quản lý Đơn hàng</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản lý đơn hàng</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 <body class="container mt-4">
-    <h2>Quản lý Đơn hàng</h2>
-    <table class="table">
-        <thead>
+
+    <!-- 🔹 Tiêu đề -->
+    <h2 class="text-center text-primary">QUẢN LÝ ĐƠN HÀNG</h2>
+
+    <!-- 🔹 Menu lọc trạng thái -->
+    <div class="d-flex mb-3">
+        <button class="btn btn-outline-primary mx-1 filter-btn" data-status="all">Tất cả</button>
+        <button class="btn btn-outline-warning mx-1 filter-btn" data-status="pending">Chờ xử lý</button>
+        <button class="btn btn-outline-info mx-1 filter-btn" data-status="processing">Đang xử lý</button>
+        <button class="btn btn-outline-success mx-1 filter-btn" data-status="completed">Hoàn thành</button>
+        <button class="btn btn-outline-danger mx-1 filter-btn" data-status="canceled">Hủy đơn</button>
+    </div>
+
+    <!-- 🔹 Thanh tìm kiếm -->
+    <div class="input-group mb-3">
+        <input type="text" id="search-input" class="form-control" placeholder="Tìm kiếm đơn hàng...">
+        <button class="btn btn-outline-secondary" id="search-btn">🔍</button>
+    </div>
+
+    <!-- 🔹 Bảng danh sách đơn hàng -->
+    <table class="table table-bordered table-hover">
+        <thead class="table-dark">
             <tr>
+                <th>Ngày gửi</th>
                 <th>ID</th>
-                <th>Thông tin</th>
+                <th>Ảnh CK</th>
+                <th>Thông tin order</th>
+                <th>Ảnh gói</th>
                 <th>Giá</th>
-                <th>Ảnh chuyển khoản</th>
                 <th>Trạng thái</th>
                 <th>Hành động</th>
             </tr>
         </thead>
-        <tbody>
+        <tbody id="order-list">
             <% orders.forEach(order => { %>
-            <tr>
+            <tr data-status="<%= order.status %>">
+                <td><%= order.date %></td>
                 <td><%= order.id %></td>
                 <td>
-                    <p><strong>Tài khoản:</strong> <%= order.account %></p>
-                    <p><strong>SĐT:</strong> <%= order.phone %></p>
-                    <p><strong>Tên nhân vật:</strong> <%= order.characterName %></p>
+                    <% if (order.paymentImage) { %>
+                        <img src="<%= order.paymentImage %>" width="50">
+                    <% } else { %>
+                        Không có ảnh
+                    <% } %>
                 </td>
-                <td><%= order.price %> đ</td>
-                <td><img src="<%= order.receiptImage %>" width="50"></td>
-                <td><%= order.status %></td>
                 <td>
-                    <form action="/update-order/<%= order.id %>" method="POST">
-                        <select name="status" class="form-select">
-                            <option value="Chờ xử lý" <%= order.status === 'Chờ xử lý' ? 'selected' : '' %>>Chờ xử lý</option>
-                            <option value="Hoàn thành" <%= order.status === 'Hoàn thành' ? 'selected' : '' %>>Hoàn thành</option>
-                            <option value="Hủy" <%= order.status === 'Hủy' ? 'selected' : '' %>>Hủy</option>
-                        </select>
-                        <button type="submit" class="btn btn-primary btn-sm mt-2">Cập nhật</button>
-                    </form>
+                    Phương thức: <%= order.method %><br>
+                    SĐT: <%= order.phone %><br>
+                    TK: <%= order.account %><br>
+                    NV: <%= order.character %>
+                </td>
+                <td><img src="<%= order.productImage %>" width="50"></td>
+                <td><%= order.price %> đ</td>
+                <td>
+                    <select class="form-select status-select" data-id="<%= order.id %>">
+                        <option value="pending" <%= order.status === "pending" ? "selected" : "" %>>Chờ xử lý</option>
+                        <option value="processing" <%= order.status === "processing" ? "selected" : "" %>>Đang xử lý</option>
+                        <option value="completed" <%= order.status === "completed" ? "selected" : "" %>>Hoàn thành</option>
+                        <option value="canceled" <%= order.status === "canceled" ? "selected" : "" %>>Hủy đơn</option>
+                    </select>
+                </td>
+                <td>
+                    <button class="btn btn-primary btn-sm update-status" data-id="<%= order.id %>">Cập nhật</button>
                 </td>
             </tr>
             <% }) %>
         </tbody>
     </table>
+
+    <script>
+        $(document).ready(function () {
+            // Lọc đơn hàng theo trạng thái
+            $(".filter-btn").click(function () {
+                let status = $(this).data("status");
+                if (status === "all") {
+                    $("#order-list tr").show();
+                } else {
+                    $("#order-list tr").hide();
+                    $("#order-list tr[data-status='" + status + "']").show();
+                }
+            });
+
+            // Tìm kiếm đơn hàng
+            $("#search-btn").click(function () {
+                let keyword = $("#search-input").val().toLowerCase();
+                $("#order-list tr").each(function () {
+                    let text = $(this).text().toLowerCase();
+                    $(this).toggle(text.includes(keyword));
+                });
+            });
+
+            // Cập nhật trạng thái đơn hàng
+            $(".update-status").click(function () {
+                let row = $(this).closest("tr");
+                let orderId = $(this).data("id");
+                let newStatus = row.find(".status-select").val();
+
+                $.post("/update-order-status", { id: orderId, status: newStatus }, function (response) {
+                    if (response.success) {
+                        row.attr("data-status", newStatus);
+                        alert("Cập nhật thành công!");
+                    } else {
+                        alert("Cập nhật thất bại!");
+                    }
+                });
+            });
+        });
+    </script>
+
 </body>
 </html>

@@ -195,7 +195,30 @@ app.get('/order-success', (req, res) => {
 });
 
 
+app.post("/update-order-status", async (req, res) => {
+    try {
+        const { id, status } = req.body;
 
+        // Kiểm tra ID có hợp lệ không
+        if (!ObjectId.isValid(id)) {
+            return res.json({ success: false, error: "ID không hợp lệ" });
+        }
+
+        const result = await db.collection("orders").updateOne(
+            { _id: new ObjectId(id) },
+            { $set: { status: status } }
+        );
+
+        if (result.modifiedCount > 0) {
+            res.json({ success: true });
+        } else {
+            res.json({ success: false, error: "Không tìm thấy đơn hàng hoặc trạng thái không thay đổi" });
+        }
+    } catch (error) {
+        console.error("Lỗi cập nhật:", error);
+        res.json({ success: false, error: error.message });
+    }
+});
 
 
 
