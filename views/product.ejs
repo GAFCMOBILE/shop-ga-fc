@@ -99,9 +99,22 @@
             </div>
         </div>
 
+<!-- Form tạm -->
+<form id="orderForm" action="/add-order" method="POST" enctype="multipart/form-data" style="display: none;">
+    <input type="hidden" name="productId" id="orderProductId">
+    <input type="hidden" name="productName" id="orderProductName">
+    <input type="hidden" name="price" id="orderPrice">
+    <input type="hidden" name="loginMethod" id="orderLoginMethod">
+    <input type="hidden" name="phone" id="orderPhone">
+    <input type="hidden" name="account" id="orderAccount">
+    <input type="hidden" name="password" id="orderPassword">
+    <input type="hidden" name="characterName" id="orderCharacterName">
+    <input type="hidden" name="note" id="orderNote">
+    <input type="file" name="receiptImage" id="orderReceiptImage" style="display: none;">
+</form>
 
-<!-- Popup Thanh Toán -->
-<<!-- Popup Thanh Toán -->
+
+
 <!-- Popup Thanh Toán -->
 <div id="popup-thanh-toan" class="popup-overlay">
     <div class="popup-content">
@@ -273,5 +286,43 @@ document.getElementById('upload').addEventListener('change', function (event) {
 
 });
 
+
+document.addEventListener("DOMContentLoaded", function () {
+    document.getElementById("btn-confirm-payment").addEventListener("click", function () {
+        const form = document.getElementById("orderForm");
+
+        if (!form) {
+            console.error("Form không tồn tại!");
+            return;
+        }
+
+        // Kiểm tra và gán giá trị nếu phần tử tồn tại
+        const setValue = (id, value) => {
+            const element = document.getElementById(id);
+            if (element) {
+                element.value = value;
+            } else {
+                console.error(`Không tìm thấy phần tử với id: ${id}`);
+            }
+        };
+
+        setValue("orderProductId", "<%= product.id %>");
+        setValue("orderProductName", "<%= product.name %>");
+        setValue("orderPrice", document.getElementById("popup-total")?.innerText || "");
+        setValue("orderLoginMethod", document.getElementById("popup-method")?.innerText || "");
+        setValue("orderPhone", document.getElementById("popup-phone")?.innerText || "");
+        setValue("orderAccount", document.getElementById("popup-account")?.innerText || "");
+        setValue("orderPassword", document.getElementById("popup-password")?.innerText || "");
+        setValue("orderCharacterName", document.getElementById("popup-character")?.innerText || "");
+
+        // Lấy ảnh thanh toán
+        const fileInput = document.getElementById("upload");
+        if (fileInput?.files.length > 0) {
+            document.getElementById("orderReceiptImage").files = fileInput.files;
+        }
+
+        form.submit(); // Gửi form lên server
+    });
+});
 
 </script>

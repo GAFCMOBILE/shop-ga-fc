@@ -55,6 +55,9 @@ let products = [
     }
 ];
 
+
+let orders = [];
+
 // Cấu hình multer để lưu trữ hình ảnh
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -73,8 +76,8 @@ app.get('/', (req, res) => {
 });
 
 // Trang quản trị - Thêm, sửa, xóa sản phẩm
-app.get('/admin', (req, res) => {
-  res.render('admin', { products: products });
+app.get('/admin-products', (req, res) => {
+  res.render('admin-products', { products: products });
 });
 
 const generateId = () => {
@@ -88,7 +91,7 @@ app.post('/add-product', upload.single('image'), (req, res) => {
 
   products.push({ id, name, price, image });
 
-  res.redirect('/admin');
+  res.redirect('/admin-products');
 });
 
 
@@ -96,7 +99,7 @@ app.post('/add-product', upload.single('image'), (req, res) => {
 app.post('/delete-product/:id', (req, res) => {
   const id = parseInt(req.params.id);
   products = products.filter(product => product.id !== id);
-  res.redirect('/admin');
+  res.redirect('/admin-products');
 });
 
 // Xử lý sửa sản phẩm
@@ -132,7 +135,7 @@ app.get('/get-product/:id', (req, res) => {
 });
 
 
-  res.redirect('/admin');
+  res.redirect('/admin-products');
 });
 
 
@@ -147,6 +150,53 @@ app.get("/product/:id", (req, res) => {
         res.status(404).send("Sản phẩm không tồn tại");
     }
 });
+
+
+
+
+// === ROUTE QUẢN LÝ ĐƠN HÀNG ===
+app.get('/admin-orders', (req, res) => {
+  res.render('admin-orders', { orders });
+});
+
+app.post('/add-order', upload.single('receiptImage'), (req, res) => {
+    const { loginMethod, phone, account, password, characterName, price, note } = req.body;
+    const receiptImage = req.file ? '/images/' + req.file.filename : ''; // Lưu ảnh
+    const id = orders.length + 1;
+
+    // Tạo đơn hàng mới
+    const newOrder = {
+        id,
+        loginMethod,
+        phone,
+        account,
+        password,
+        characterName,
+        price,
+        note,
+        receiptImage,
+        status: "Chờ xử lý" // Mặc định trạng thái chờ xử lý
+    };
+
+    orders.push(newOrder);
+    res.redirect('/order-success'); // Điều hướng đến trang xác nhận thành công
+});
+
+
+app.post('/update-order/:id', (req, res) => {
+  const id = parseInt(req.params.id);
+  const { status } = req.body;
+  orders = orders.map(order => order.id === id ? { ...order, status } : order);
+  res.redirect('/admin-orders');
+});
+
+app.get('/order-success', (req, res) => {
+  res.render('order-success');
+});
+
+
+
+
 
 
 // Khởi động server
